@@ -5,11 +5,11 @@ import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
 import Button from './Button';
 
-export default function SortModal({ navigation }) {
+export default function SortModal({ sort, setSort, onPress }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { }} style={{ paddingHorizontal: 19, }}>
+        <TouchableOpacity onPress={() => { onPress() }} style={{ paddingHorizontal: 19, }}>
           <Svg
             width={14}
             height={16}
@@ -27,10 +27,10 @@ export default function SortModal({ navigation }) {
         </Text>
       </View>
       <View style={{ flex: 1, paddingHorizontal: 40, paddingVertical: 25, display: 'flex', justifyContent: 'space-around' }}>
-        <View style={styles.row}>
-          <Text style={styles.checktext}>Newest First</Text>
-          <View style={styles.check}>
-            {true ? <Svg
+        <TouchableOpacity style={styles.row} onPress={() => { setSort(true) }}>
+          <Text style={(sort ? styles.checktext : styles.unchecktext)}>Newest First</Text>
+          <View style={(!sort ? styles.uncheck : styles.check)}>
+            {sort ? <Svg
               width={14}
               height={11}
               fill="none"
@@ -42,11 +42,11 @@ export default function SortModal({ navigation }) {
               />
             </Svg> : <View></View>}
           </View>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.checktext}>Newest First</Text>
-          <View style={styles.uncheck}>
-            {true ? <Svg
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.row} onPress={() => { setSort(false) }}>
+          <Text style={(!sort ? styles.checktext : styles.unchecktext)}>Oldest First</Text>
+          <View style={(sort ? styles.uncheck : styles.check)}>
+            {!sort ? <Svg
               width={14}
               height={11}
               fill="none"
@@ -58,16 +58,16 @@ export default function SortModal({ navigation }) {
               />
             </Svg> : <View></View>}
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
       <View style={styles.footer}>
-        <Button onPress={() => { navigation.navigate('SignupScreen'); }} color={theme.colors.backgroundColor} style={[styles.mannual]}>
+        <Button onPress={() => { }} color={theme.colors.backgroundColor} style={[styles.mannual]}>
           <Text style={[styles.bttext, { paddingHorizontal: 50 }]}>
             Confirm
           </Text>
         </Button>
       </View>
-    </View>
+    </View >
   );
 }
 
@@ -134,6 +134,9 @@ const styles = StyleSheet.create({
   checktext: {
     color: theme.colors.thickyellowColor,
 
+  },
+  unchecktext: {
+    color: theme.colors.backgroundColor,
   },
   check: {
     backgroundColor: theme.colors.thickyellowColor,

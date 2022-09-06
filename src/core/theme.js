@@ -22,7 +22,8 @@ export const theme = {
     bottomColor: '#242424',
     error: 'red',
     redColor: 'red',
-    inputColor: '#3C3C3C'
+    inputColor: '#3C3C3C',
+    qrcodeColor: '#C6A15AC9'
   },
   fontSize: {
     title: 54,

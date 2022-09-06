@@ -1,13 +1,16 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, Image, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path, Circle } from "react-native-svg"
-import Button from '../components/Button';
 import PagerView from 'react-native-pager-view';
+import QRCode from 'react-native-qrcode-svg';
+// import { style } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes';
 
 export default function QrcodeScreen({ navigation }) {
   const [check, setCheck] = useState(true);
+  const refPageview = useRef();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -29,20 +32,40 @@ export default function QrcodeScreen({ navigation }) {
         </Text>
       </View>
       <View style={styles.buttongroup}>
-        <View style={(check ? styles.scan : styles.show)}>
-          <Text style={styles.earn}>Scan a QR</Text>
-        </View>
-        <Text style={styles.spent}>Show your QR</Text>
+        <TouchableOpacity style={(check ? styles.scan : styles.show)} onPress={() => { if (!check) { refPageview.current?.setPage(0); setCheck(true) } }}>
+          <Text style={check ? styles.earn : styles.showtext}>Scan a QR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={(!check ? styles.scan : styles.show)} onPress={() => { if (check) { refPageview.current?.setPage(1); setCheck(false) } }}>
+          <Text style={!check ? styles.earn : styles.showtext}>Show your QR</Text>
+        </TouchableOpacity>
+        {/* <Text style={styles.spent}>Show your QR</Text> */}
       </View>
-      <PagerView style={styles.pagerView} initialPage={0}>
+      <PagerView ref={refPageview} style={styles.pagerView} initialPage={0}>
         <View key="1">
           <Image style={styles.avatar} source={require('../assets/scan.png')} />
           <Text style={styles.pleaseqr}>
             Place the QR Code inside of the frame
           </Text>
+          <Text style={styles.description}>
+            Once successfully scanned the user will show here
+          </Text>
         </View>
         <View key="2">
-          <Text>Second page</Text>
+          <View style={styles.qrcode}>
+            <QRCode
+              style={{ borderRadius: 20 }}
+              value="Just some string value"
+              size={200}
+              color={theme.colors.whiteColor}
+              backgroundColor={theme.colors.qrcodeColor}
+            />
+          </View>
+          <Text style={styles.mycode}>
+            John Doe’s QR Code
+          </Text>
+          <Text style={styles.description}>
+            Scan the QR Code to send John a payment
+          </Text>
         </View>
       </PagerView>
     </View>
@@ -54,10 +77,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.whiteColor,
     paddingTop: 45,
-    marginLeft: 30,
-    marginRight: 30,
   },
   header: {
+    marginLeft: 30,
+    marginRight: 30,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
@@ -72,25 +95,33 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.subtitle,
     fontWeight: theme.fontWeight.normal,
   },
+  mycode: {
+    marginVertical: 10,
+    width: '100%',
+    textAlign: 'center',
+    color: theme.colors.backgroundColor,
+    fontSize: theme.fontSize.subtitle1,
+    fontWeight: theme.fontWeight.normal,
+  },
   buttongroup: {
+    marginLeft: 30,
+    marginRight: 30,
     marginTop: 50,
     position: 'relative',
-    width: '100%',
     height: 39,
     borderRadius: 20,
-    backgroundColor: 'rgba(198, 161, 90, 0.33)'
+    backgroundColor: 'rgba(198, 161, 90, 0.33)',
+    display: 'flex',
+    flexDirection: 'row'
   },
   scan: {
-    position: 'absolute',
-    left: 0,
     width: '50%',
     height: 39,
     borderRadius: 20,
-    backgroundColor: 'rgba(198, 161, 90, 0.33)'
+    backgroundColor: 'rgba(198, 161, 90, 0.33)',
+    color: theme.colors.blackColor,
   },
   show: {
-    position: 'absolute',
-    right: 0,
     width: '50%',
     height: 39,
     borderRadius: 20,
@@ -105,6 +136,12 @@ const styles = StyleSheet.create({
     marginBottom: 'auto',
     color: theme.colors.whiteColor
   },
+  showtext: {
+    textAlign: 'center',
+    marginTop: 'auto',
+    marginBottom: 'auto',
+    color: theme.colors.greytextColor
+  },
   spent: {
     textAlign: 'center',
     marginTop: 'auto',
@@ -117,8 +154,34 @@ const styles = StyleSheet.create({
     marginRight: 'auto'
   },
   pleaseqr: {
-    marginTop: 50,
+    marginVertical: 10,
     fontSize: theme.fontSize.content,
     textAlign: 'center'
+  },
+  qrcode: {
+    marginTop: 50,
+    backgroundColor: theme.colors.qrcodeColor,
+    padding: 40,
+    borderRadius: 10,
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+  description: {
+    width: '80%',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    textAlign: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.greytextColor,
+    shadowColor: theme.colors.blackColor,
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 20,
+      width: 20
+    }
   }
 });

@@ -1,11 +1,13 @@
 
 import React, { useState, useRef } from 'react';
 import RBSheet from "react-native-raw-bottom-sheet";
-import { ImageBackground, FlatList, StyleSheet, TouchableOpacity, Text, ScrollView, Image, View } from 'react-native';
+import { ImageBackground, SafeAreaView, FlatList, StyleSheet, TouchableOpacity, Text, ScrollView, Image, View, Alert } from 'react-native';
 import { theme } from '../core/theme';
 import Svg, { Path } from "react-native-svg";
 import HomeCard from '../components/HomeCard';
 import SortModal from '../components/SortModal';
+import DocumentPicker from 'react-native-document-picker';
+import axios from 'axios';
 
 export default function HomeScreen({ navigation, onView }) {
   const data = [
@@ -14,9 +16,72 @@ export default function HomeScreen({ navigation, onView }) {
     { id: 3, avatar: "avatar.jpg", name: "Abby Grahm", date: '16 July, 2022', money: "100.00" },
     { id: 4, avatar: "avatar.jpg", name: "Grace Jones", date: '08 July, 2022', money: "5.95" },
   ];
+  //Hi, are you @bunny?
   const refRBSheet = useRef();
+  const [sort, setSort] = useState(true);
+  const [singleFile, setSingleFile] = useState(null);
+  const [message, setMessage] = useState('aaa');
+  const uploadImage = async () => {
+    // Check if any file is selected or not
+    if (singleFile != null) {
+      // If file selected then create FormData
+      const fileToUpload = singleFile;
+      const data = new FormData();
+      console.log(fileToUpload);
+      data.append('file', fileToUpload);
+      data.append('type', 'POST');
+      // Please change file upload URL
+      axios.post(
+        'https://sandbox.primetrust.com/v2/uploaded-documents',
+        data,
+        {
+          headers: {
+            Authorization: "Bearer " + 'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoX3NlY3JldCI6Ijc4ZGFmZTI5LTcyMmMtNGQwNC05ODdiLTFhNmEzZTIzNTQzMiIsInVzZXJfZ3JvdXBzIjpbXSwibm93IjoxNjYyMjY3Nzg5LCJleHAiOjE2NjI4NzI1ODl9.bYnwsMEXKAbVqO8UIpkr_UZyG5kit1vN3hceNIV1kMo',
+            'Content-Type': 'multipart/form-data; ',
+          },
+        }
+      ).then(res => setMessage('________aaaaa')).catch(err => alert(err));
+      // let responseJson = await res.json();
+      // if (responseJson.status == 1) {
+      //   setMessage('Upload Successful');
+      // }
+    } else {
+      // If no file selected the show setMessage
+      setMessage('Please Select File first');
+    }
+  };
+  const selectFile = async () => {
+    // Opening Document Picker to select one file
+    try {
+      const res = await DocumentPicker.pick({
+        // Provide which type of file you want user to pick
+        type: [DocumentPicker.types.allFiles],
+        // There can me more options as well
+        // DocumentPicker.types.allFiles
+        // DocumentPicker.types.images
+        // DocumentPicker.types.plainText
+        // DocumentPicker.types.audio
+        // DocumentPicker.types.pdf
+      });
+      // Printing the log realted to the file
+      setMessage('res : ' + JSON.stringify(res));
+      // Setting the state to show single file attributes
+      setSingleFile(res);
+    } catch (err) {
+      setSingleFile(null);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        setMessage('Canceled');
+      } else {
+        // For Unknown Error
+        setMessage('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
+    }
+  };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ImageBackground source={require('../assets/background.png')} resizeMode="stretch" style={styles.header}>
         <View style={styles.subgroup}>
           <View style={styles.avatargroup}>
@@ -69,7 +134,7 @@ export default function HomeScreen({ navigation, onView }) {
             }
           }}
         >
-          <SortModal />
+          <SortModal sort={sort} setSort={setSort} onPress={() => { refRBSheet.current.close() }} />
         </RBSheet>
         <Text style={styles.currentval}>
           Current Balance
@@ -177,6 +242,12 @@ export default function HomeScreen({ navigation, onView }) {
         </View>
       </View>
       <View style={styles.body}>
+        <TouchableOpacity onPress={selectFile}>
+          <Text>select</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={uploadImage}>
+          <Text>upload{message}</Text>
+        </TouchableOpacity>
         <View style={styles.row}>
           <Text style={styles.recent}>
             Recent Activity
@@ -199,7 +270,7 @@ export default function HomeScreen({ navigation, onView }) {
             )
           }} />
       </View>
-    </View>
+    </SafeAreaView >
   );
 }
 
