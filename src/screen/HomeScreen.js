@@ -8,6 +8,7 @@ import HomeCard from '../components/HomeCard';
 import SortModal from '../components/SortModal';
 import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
+import RNFS from 'react-native-fs';
 
 export default function HomeScreen({ navigation, onView }) {
   const data = [
@@ -25,22 +26,25 @@ export default function HomeScreen({ navigation, onView }) {
     // Check if any file is selected or not
     if (singleFile != null) {
       // If file selected then create FormData
+      const fs = require
       const fileToUpload = singleFile;
       const data = new FormData();
       console.log(fileToUpload);
-      data.append('file', fileToUpload);
-      data.append('type', 'POST');
+      data.append('file', fileToUpload[0]);
+      console.log(data);
       // Please change file upload URL
-      axios.post(
+      await fetch(
         'https://sandbox.primetrust.com/v2/uploaded-documents',
-        data,
         {
+          method: 'post',
+          body: data,
           headers: {
+            // 'Accept': 'application/json',
             Authorization: "Bearer " + 'eyJhbGciOiJIUzI1NiJ9.eyJhdXRoX3NlY3JldCI6Ijc4ZGFmZTI5LTcyMmMtNGQwNC05ODdiLTFhNmEzZTIzNTQzMiIsInVzZXJfZ3JvdXBzIjpbXSwibm93IjoxNjYyMjY3Nzg5LCJleHAiOjE2NjI4NzI1ODl9.bYnwsMEXKAbVqO8UIpkr_UZyG5kit1vN3hceNIV1kMo',
             'Content-Type': 'multipart/form-data; ',
           },
         }
-      ).then(res => setMessage('________aaaaa')).catch(err => alert(err));
+      ).then(res => res.json()).then((data) => { console.log(data) }).catch(err => console.log('error', err));
       // let responseJson = await res.json();
       // if (responseJson.status == 1) {
       //   setMessage('Upload Successful');
@@ -81,7 +85,7 @@ export default function HomeScreen({ navigation, onView }) {
     }
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <ImageBackground source={require('../assets/background.png')} resizeMode="stretch" style={styles.header}>
         <View style={styles.subgroup}>
           <View style={styles.avatargroup}>
@@ -242,12 +246,12 @@ export default function HomeScreen({ navigation, onView }) {
         </View>
       </View>
       <View style={styles.body}>
-        <TouchableOpacity onPress={selectFile}>
+        {/* <TouchableOpacity onPress={selectFile}>
           <Text>select</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={uploadImage}>
           <Text>upload{message}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={styles.row}>
           <Text style={styles.recent}>
             Recent Activity
@@ -270,7 +274,7 @@ export default function HomeScreen({ navigation, onView }) {
             )
           }} />
       </View>
-    </SafeAreaView >
+    </ScrollView >
   );
 }
 

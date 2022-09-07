@@ -7,6 +7,7 @@ import SignupScreen from '../screen/SignupScreen'
 import LinkbankScreen from '../screen/LinkbankScreen'
 import LinkbankLoginScreen from '../screen/LinkbankLoginScreen'
 import WelcomeScreen from '../screen/WelcomeScreen'
+import SelectaccountScreen from '../screen/SelectaccountScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -26,6 +27,11 @@ export function LoginNavigator() {
             <Stack.Screen
                 name="LoginScreen"
                 component={LoginScreen}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SelectaccountScreenr"
+                component={SelectaccountScreen}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
