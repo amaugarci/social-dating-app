@@ -5,14 +5,14 @@ export class User {
     id,
     email,
     authToken,
-    refreshToken,
+    username,
     permission
   ) {
     this.id = id
     this.email = email
     this.authToken = authToken
-    this.refreshToken = refreshToken,
-    this.permission=permission
+    this.username = username,
+      this.permission = permission
   }
 
   static fromJson(loginResponse, email) {
@@ -20,7 +20,7 @@ export class User {
       loginResponse.userId,
       email,
       loginResponse.authToken,
-      loginResponse.refreshToken,
+      loginResponse.username,
       loginResponse.permission
     )
   }

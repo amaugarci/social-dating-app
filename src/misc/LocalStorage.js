@@ -23,7 +23,7 @@ export class LocalStorage {
         userParsed.id,
         userParsed.email,
         userParsed.authToken,
-        userParsed.refreshToken,
+        userParsed.username,
         userParsed.permission
       )
     })

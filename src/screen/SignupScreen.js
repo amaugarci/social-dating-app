@@ -19,23 +19,37 @@ export default function SignupScreen({ navigation }) {
   const [conpin, setConpin] = useState({ value: '', error: '' });
   const [def, setDef] = useState('');
   const [pin, setPin] = useState('');
+  const onTextChanged = (value) => {
+    // code to remove non-numeric characters from text
+    if (value.length > 4) {
+      return;
+    }
+    setPin(value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''));
+  };
+  const onreTextChanged = (value) => {
+    // code to remove non-numeric characters from text
+    if (value.length > 4) {
+      return;
+    }
+    setConpin({ value: value.replace(/[- #*;,.<>\{\}\[\]\\\/]/gi, ''), error: '' });
+  };
   const validate = () => {
-    if (email.value == '' || password == '' || pin == '') {
-      alert('please enterr all data');
-      return;
-    }
-    if (!validateEmail(email.value)) {
-      setEmail({ value: email.value, error: 'invalid email' });
-      return;
-    }
-    if (password !== conpassword.value) {
-      setConPassword({ value: conpassword.value, error: 'not match password' });
-      return;
-    }
-    if (pin !== conpin.value) {
-      setConpin({ value: conpin.value, error: 'not match pin' });
-      return;
-    }
+    // if (email.value == '' || password == '' || pin == '') {
+    //   alert('please enterr all data');
+    //   return;
+    // }
+    // if (!validateEmail(email.value)) {
+    //   setEmail({ value: email.value, error: 'invalid email' });
+    //   return;
+    // }
+    // if (password !== conpassword.value) {
+    //   setConPassword({ value: conpassword.value, error: 'not match password' });
+    //   return;
+    // }
+    // if (pin !== conpin.value) {
+    //   setConpin({ value: conpin.value, error: 'not match pin' });
+    //   return;
+    // }
     getToken();
   }
   const validateEmail = (email) => {
@@ -44,7 +58,8 @@ export default function SignupScreen({ navigation }) {
   };
   const getToken = async () => {
     await fetch(
-      `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
+      // `${PRIME_TRUST_URL}auth/jwts?email=${email.value}&password=${password}`,
+      `${PRIME_TRUST_URL}auth/jwts?email=dragondev93@gmail.com&password=aaaAAA111@`,
       {
         method: 'post',
         headers: {
@@ -57,12 +72,12 @@ export default function SignupScreen({ navigation }) {
       const loginResponse = {
         userId: 1,
         authToken: data.token,
-        refreshToken: 'test',
+        username: 'username',
         permission: 0,
       };
       const user = User.fromJson(loginResponse, email.value);
       userStore.setUser(user);
-      navigation.navigate('SelectaccountScreen');
+      navigation.navigate('KycScreen');
     }).catch(err => { createUser(); });
   };
   const createUser = async () => {
@@ -100,16 +115,6 @@ export default function SignupScreen({ navigation }) {
       </View>
       <View style={styles.body}>
         <View style={styles.inputgroup}>
-          <Text style={styles.label}>Username</Text>
-          <TextInput
-            placeholder="username"
-            returnKeyType="next"
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-            autoCapitalize="none"
-          />
-        </View>
-        <View style={styles.inputgroup}>
           <Text style={styles.label}>Email</Text>
           <TextInput
             placeholder="example@email.com"
@@ -122,6 +127,16 @@ export default function SignupScreen({ navigation }) {
             autoCompleteType="email"
             textContentType="emailAddress"
             keyboardType="email-address"
+          />
+        </View>
+        <View style={styles.inputgroup}>
+          <Text style={styles.label}>Username</Text>
+          <TextInput
+            placeholder="username"
+            returnKeyType="next"
+            value={username}
+            onChangeText={(text) => setUsername(text)}
+            autoCapitalize="none"
           />
         </View>
         <View style={styles.inputgroup}>
@@ -152,9 +167,10 @@ export default function SignupScreen({ navigation }) {
           <Text style={styles.label}>PIN</Text>
           <TextInput
             placeholder="PIN number must be 4 digits "
+            keyboardType='numeric'
             returnKeyType="next"
             value={pin}
-            onChangeText={(text) => setPin(text)}
+            onChangeText={(text) => onTextChanged(text)}
             autoCapitalize="none"
           />
 
@@ -164,8 +180,9 @@ export default function SignupScreen({ navigation }) {
           <TextInput
             placeholder="Re-enter your PIN number"
             returnKeyType="next"
+            keyboardType='numeric'
             value={conpin}
-            onChangeText={(text) => setConpin({ value: text, error: '' })}
+            onChangeText={(text) => onreTextChanged(text)}
             error={!!conpin.error}
             errorText={conpin.error}
             autoCapitalize="none"
